@@ -1,0 +1,42 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: python -m training.train --data-path data/raw/breast_cancer.csv 
+      --output-dir artifacts --model-version 1.0.0 --metrics-path metrics.json
+    deps:
+    - path: data/raw/breast_cancer.csv
+      hash: md5
+      md5: c921a9f20675fc8ca4ed1564eed05eca
+      size: 114176
+    - path: requirements-train.txt
+      hash: md5
+      md5: 11fe486fea469958922a6bf8e6da191e
+      size: 89
+    - path: training/train.py
+      hash: md5
+      md5: 735db5a274db4cf2b0fa651348a45d05
+      size: 5675
+    params:
+      params.yaml:
+        models:
+          logistic_regression:
+            C: 0.14
+            max_iter: 2500
+          random_forest:
+            n_estimators: 120
+            max_depth:
+        seed: 42
+        test_size: 0.2
+    outs:
+    - path: artifacts/model.joblib
+      hash: md5
+      md5: 80e4028078dd81aaf6fa9b48f0c6718f
+      size: 2302
+    - path: artifacts/model_card.json
+      hash: md5
+      md5: 3a9ec75c69d7b00c53eec63145f071e8
+      size: 1792
+    - path: metrics.json
+      hash: md5
+      md5: 4238bde960ad31e61dfe9239489abf9e
+      size: 865
