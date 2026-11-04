@@ -1,0 +1,38 @@
+services:
+  api:
+    image: ${DOCKERHUB_USERNAME}/breast-cancer-triage-api:${IMAGE_TAG:-1.0.0}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODEL_VERSION: ${MODEL_VERSION:-1.0.0}
+        GIT_SHA: ${GIT_SHA:-unknown}
+    ports:
+      - "${HOST_PORT:-8000}:8000"
+    environment:
+      MODEL_PATH: /service/artifacts/model.joblib
+      DECISION_THRESHOLD: ${DECISION_THRESHOLD:-0.5}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
+  redis:
+    image: redis:7.4.11-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - redis_data:/data
+volumes:
+  redis_data:

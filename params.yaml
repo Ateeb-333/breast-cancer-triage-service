@@ -1,0 +1,9 @@
+seed: 42
+test_size: 0.2
+models:
+  logistic_regression:
+    C: 0.15
+    max_iter: 2500
+  random_forest:
+    n_estimators: 120
+    max_depth: null
