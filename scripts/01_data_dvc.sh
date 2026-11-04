@@ -20,7 +20,7 @@ mkdir -p dvc-remote
 python -m training.prepare_data --trim-last 0 --sample-json sample.json
 dvc add data/raw/breast_cancer.csv
 dvc push
-sha1=$(awk '/md5:/ {print $2}' data/raw/breast_cancer.csv.dvc)
+sha1=$(awk '$2=="md5:" {print $3}' data/raw/breast_cancer.csv.dvc)
 size1=$(python -c 'import os; print(os.path.getsize("data/raw/breast_cancer.csv"))')
 git add -A
 # Commit the complete DVC remote object(s) to Git (assignment-specific exception).
@@ -31,12 +31,12 @@ echo "VERSION 1: git=$v1 DVC=$sha1 rows=569 bytes=$size1"
 echo 'Proof of remote restore: deleting local CSV/cache, then dvc pull'
 rm -f data/raw/breast_cancer.csv
 rm -rf .dvc/cache
-dvc pull
+dvc pull data/raw/breast_cancer.csv.dvc
 python -c 'import pandas as pd;print("RESTORED ROWS:",len(pd.read_csv("data/raw/breast_cancer.csv")))'
 python -m training.prepare_data --trim-last 30 --sample-json sample.json
 dvc add data/raw/breast_cancer.csv
 dvc push
-sha2=$(awk '/md5:/ {print $2}' data/raw/breast_cancer.csv.dvc)
+sha2=$(awk '$2=="md5:" {print $3}' data/raw/breast_cancer.csv.dvc)
 size2=$(python -c 'import os; print(os.path.getsize("data/raw/breast_cancer.csv"))')
 git add -A
 git add -f dvc-remote
