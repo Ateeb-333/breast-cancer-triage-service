@@ -1,4 +1,5 @@
 """FastAPI screening triage demo. Never intended for medical decision-making."""
+import utils.session
 from contextlib import asynccontextmanager
 import json
 import logging
